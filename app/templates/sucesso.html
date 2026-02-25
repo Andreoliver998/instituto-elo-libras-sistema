@@ -15,11 +15,22 @@ Seu cadastro foi registrado com sucesso.
 
   <div class="divider" role="presentation"></div>
 
-  <a class="btn btn--cta btn--lg"
-     href="https://wa.me/5598981263164?text=Olá%2C%20acabei%20de%20concluir%20meu%20cadastro%20no%20Curso%20de%20LIBRAS."
-     target="_blank"
-     rel="noopener noreferrer">
-     Falar no WhatsApp
-  </a>
+  {% if whatsapp_group_url %}
+    <a class="btn btn--cta btn--lg"
+       href="{{ whatsapp_group_url }}"
+       target="_blank"
+       rel="noopener noreferrer">
+       Falar no WhatsApp
+    </a>
+  {% else %}
+    <a class="btn btn--cta"
+       href="#"
+       aria-disabled="true">
+       WhatsApp indisponível
+    </a>
+    <p class="foot">
+      O link do WhatsApp ainda não foi configurado.
+    </p>
+  {% endif %}
 
 {% endblock %}

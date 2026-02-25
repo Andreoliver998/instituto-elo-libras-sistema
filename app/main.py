@@ -93,7 +93,8 @@ def _sqlite_ensure_students_columns() -> None:
 Base.metadata.create_all(bind=engine)
 _sqlite_ensure_students_columns()
 
-CHECKOUT_URL = (os.getenv("CHECKOUT_URL") or "https://mpago.li/1KF9Yzi").strip()
+CHECKOUT_URL = (os.getenv("CHECKOUT_URL") or "/obrigado").strip()
+WHATSAPP_GROUP_URL = (os.getenv("WHATSAPP_GROUP_URL") or "").strip()
 ADMIN_STATUS_OPTIONS = ["cadastrado", "pago", "pendente", "concluido"]
 
 def _is_valid_http_url(value: str) -> bool:
@@ -102,6 +103,11 @@ def _is_valid_http_url(value: str) -> bool:
         return False
     if value == "https://SEU-LINK-DE-PAGAMENTO":
         return False
+    if value.startswith("//"):
+        return False
+    # Permite caminho relativo para facilitar dev/local (ex.: CHECKOUT_URL=/obrigado).
+    if value.startswith("/"):
+        return True
     parsed = urlparse(value)
     return parsed.scheme in {"http", "https"} and bool(parsed.netloc)
 
@@ -285,7 +291,7 @@ def cadastro_submit(
 
     return templates.TemplateResponse(
         "sucesso.html",
-        {"request": request, "nome": aluno.nome},
+        {"request": request, "nome": aluno.nome, "whatsapp_group_url": WHATSAPP_GROUP_URL},
     )
 
 @app.get("/sucesso", response_class=HTMLResponse)
@@ -295,6 +301,7 @@ def sucesso(request: Request, nome: str | None = None):
         {
             "request": request,
             "nome": (nome or "Aluno").strip() or "Aluno",
+            "whatsapp_group_url": WHATSAPP_GROUP_URL,
         },
     )
 
