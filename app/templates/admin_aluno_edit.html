@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}Instituto Elo Libras — Admin (Editar aluno){% endblock %}
+{% block description %}Edição de cadastro do aluno.{% endblock %}
+{% block card_class %}card--wide{% endblock %}
+
+{% block header_title %}Painel do Dono — Alunos{% endblock %}
+{% block header_subtitle %}
+Ver e editar cadastro
+{% endblock %}
+
+{% block head %}
+  <style>
+    .top-actions{
+      display:flex;
+      gap: 10px;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .top-actions__left{
+      display:flex;
+      gap: 10px;
+      align-items:center;
+      flex-wrap: wrap;
+    }
+
+    .kpi{
+      display:flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      color: rgba(255,255,255,.72);
+      font-size: 12.5px;
+    }
+
+    .kpi b{ color: rgba(255,255,255,.92); }
+  </style>
+{% endblock %}
+
+{% block content %}
+  <div class="top-actions">
+    <div class="top-actions__left">
+      <a class="btn btn--secondary btn--auto" href="/admin/alunos">Voltar para lista</a>
+      <form method="post" action="/admin/logout">
+        <button class="btn btn--secondary btn--auto" type="submit">Sair</button>
+      </form>
+    </div>
+    <div class="kpi">
+      <span>ID: <b class="mono">{{ aluno.id }}</b></span>
+      <span>Status atual: <b>{{ aluno.status or "cadastrado" }}</b></span>
+      <span>Criado em: <b class="mono">{% if aluno.created_at %}{{ aluno.created_at }}{% endif %}</b></span>
+    </div>
+  </div>
+
+  <form class="form" method="post" action="/admin/alunos/{{ aluno.id }}" autocomplete="on">
+    <div class="note">
+      <div class="note__title">Dados do aluno</div>
+      <div class="muted note__text">Edite as informações principais para contato e organização do curso.</div>
+    </div>
+
+    <div class="grid">
+      <div class="field span-all">
+        <label for="nome">Nome completo</label>
+        <input id="nome" name="nome" type="text" required value="{{ aluno.nome }}" />
+      </div>
+
+      <div class="field">
+        <label for="whatsapp">WhatsApp</label>
+        <input id="whatsapp" name="whatsapp" type="tel" required value="{{ aluno.whatsapp }}" />
+      </div>
+
+      <div class="field">
+        <label for="email">E-mail</label>
+        <input id="email" name="email" type="email" value="{{ aluno.email or '' }}" placeholder="(opcional)" />
+      </div>
+
+      <div class="field">
+        <label for="origem">Origem</label>
+        <select id="origem" name="origem">
+          <option value="" {% if not aluno.origem %}selected{% endif %}>Selecione</option>
+          <option value="instagram" {% if aluno.origem == 'instagram' %}selected{% endif %}>Instagram</option>
+          <option value="whatsapp" {% if aluno.origem == 'whatsapp' %}selected{% endif %}>WhatsApp</option>
+          <option value="igreja" {% if aluno.origem == 'igreja' %}selected{% endif %}>Igreja</option>
+          <option value="escola" {% if aluno.origem == 'escola' %}selected{% endif %}>Escola</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="status">Status</label>
+        <select id="status" name="status">
+          {% for s in status_options %}
+            <option value="{{ s }}" {% if (aluno.status or 'cadastrado') == s %}selected{% endif %}>{{ s }}</option>
+          {% endfor %}
+        </select>
+        <div class="help">Controle interno do dono do curso.</div>
+      </div>
+    </div>
+
+    <div class="divider" role="presentation"></div>
+
+    <div class="note">
+      <div class="note__title">Endereço</div>
+      <div class="muted note__text">Preenchimento opcional. Útil para cadastro interno e organização.</div>
+    </div>
+
+    <div class="grid">
+      <div class="field">
+        <label for="cep">CEP</label>
+        <input id="cep" name="cep" type="text" inputmode="numeric" value="{{ aluno.cep or '' }}" placeholder="00000-000" />
+      </div>
+
+      <div class="field">
+        <label for="uf">UF</label>
+        <input id="uf" name="uf" type="text" maxlength="2" value="{{ aluno.uf or '' }}" placeholder="MA" />
+      </div>
+
+      <div class="field">
+        <label for="cidade">Cidade</label>
+        <input id="cidade" name="cidade" type="text" value="{{ aluno.cidade or '' }}" placeholder="São Luís" />
+      </div>
+
+      <div class="field">
+        <label for="bairro">Bairro</label>
+        <input id="bairro" name="bairro" type="text" value="{{ aluno.bairro or '' }}" placeholder="Seu bairro" />
+      </div>
+
+      <div class="field span-all">
+        <label for="logradouro">Logradouro</label>
+        <input id="logradouro" name="logradouro" type="text" value="{{ aluno.logradouro or '' }}" placeholder="Rua, Avenida..." />
+      </div>
+
+      <div class="field">
+        <label for="numero">Número</label>
+        <input id="numero" name="numero" type="text" inputmode="numeric" value="{{ aluno.numero or '' }}" placeholder="Ex.: 123" />
+      </div>
+
+      <div class="field">
+        <label for="complemento">Complemento</label>
+        <input id="complemento" name="complemento" type="text" value="{{ aluno.complemento or '' }}" placeholder="Apto, bloco, referência..." />
+      </div>
+    </div>
+
+    <button class="btn btn--cta btn--lg" type="submit">
+      Salvar alterações
+    </button>
+  </form>
+{% endblock %}

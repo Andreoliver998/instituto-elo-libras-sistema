@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Instituto Elo Libras — Cadastro concluído{% endblock %}
+{% block description %}Cadastro concluído com sucesso. Entre em contato pelo WhatsApp para receber as orientações da turma.{% endblock %}
+
+{% block header_title %}Cadastro concluído{% endblock %}
+{% block header_subtitle %}
+Seu cadastro foi registrado com sucesso.
+{% endblock %}
+
+{% block content %}
+  <p class="muted lead">
+    Obrigado, <b>{{ nome }}</b>! Para receber as orientações da turma e o link das aulas ao vivo, fale conosco pelo WhatsApp.
+  </p>
+
+  <div class="divider" role="presentation"></div>
+
+  <a class="btn btn--cta btn--lg"
+     href="https://wa.me/5598981263164?text=Olá%2C%20acabei%20de%20concluir%20meu%20cadastro%20no%20Curso%20de%20LIBRAS."
+     target="_blank"
+     rel="noopener noreferrer">
+     Falar no WhatsApp
+  </a>
+
+{% endblock %}

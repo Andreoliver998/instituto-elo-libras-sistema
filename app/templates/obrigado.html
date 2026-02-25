@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Instituto Elo Libras — Pagamento confirmado{% endblock %}
+{% block description %}Pagamento confirmado. Conclua seu cadastro para garantir sua vaga.{% endblock %}
+
+{% block header_title %}Pagamento confirmado{% endblock %}
+{% block header_subtitle %}
+Conclua seu cadastro para garantirmos sua vaga.
+{% endblock %}
+
+{% block content %}
+  <p class="muted lead">
+    Para receber as orientações do curso, finalize seu cadastro.
+  </p>
+  <div class="divider" role="presentation"></div>
+  <a class="btn btn--cta btn--lg" href="{{ cadastro_url }}">Concluir cadastro</a>
+  <p class="foot">
+    Se você não for redirecionado automaticamente, clique no botão acima.
+  </p>
+{% endblock %}

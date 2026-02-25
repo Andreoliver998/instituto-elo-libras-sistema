@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Instituto Elo LIBRAS — Inscrição{% endblock %}
+{% block description %}Garanta sua vaga no Curso de LIBRAS (ao vivo) do Instituto Elo LIBRAS.{% endblock %}
+{% block card_class %}card--wide{% endblock %}
+
+{% block header_title %}Instituto Elo LIBRAS{% endblock %}
+{% block header_subtitle %}
+<!-- Curso de LIBRAS — Turma ao Vivo -->
+{% endblock %}
+
+{% block content %}
+
+  <p class="muted lead">
+    Para garantir sua vaga, é necessário realizar o pagamento da inscrição.
+  </p>
+
+  <div class="divider"></div>
+
+  {% if checkout_enabled %}
+    <a class="btn btn--cta btn--lg"
+       href="{{ checkout_url }}"
+       target="_blank"
+       rel="noopener noreferrer">
+      Efetuar pagamento e garantir minha vaga
+    </a>
+  {% else %}
+    <a class="btn btn--cta"
+       href="#"
+       aria-disabled="true">
+      Link de pagamento indisponível
+    </a>
+    <p class="foot">
+      O link do checkout ainda não foi configurado.
+    </p>
+  {% endif %}
+
+  <p class="foot">
+    Após a confirmação do pagamento, você será automaticamente direcionado para concluir seu cadastro e receber as orientações da turma.
+  </p>
+
+{% endblock %}

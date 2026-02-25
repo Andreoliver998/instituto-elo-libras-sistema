@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}Instituto Elo Libras — Cadastro{% endblock %}
+{% block description %}Finalize seu cadastro para garantir sua vaga e receber as orientações do Curso de LIBRAS.{% endblock %}
+{% block card_class %}card--wide{% endblock %}
+
+{% block header_title %}Cadastro do aluno{% endblock %}
+{% block header_subtitle %}
+Finalize suas informações para concluirmos sua inscrição.
+{% endblock %}
+
+{% block content %}
+  <form class="form" method="post" action="/cadastro" autocomplete="on">
+    <div class="note">
+      <div class="note__title">Informações do aluno</div>
+      <div class="muted note__text">
+        Confirme seus dados para enviarmos as orientações do curso.
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="field" style="grid-column: 1 / -1;">
+        <label for="nome">Nome completo <span class="req" aria-hidden="true">*</span></label>
+        <input id="nome" name="nome" type="text" required autocomplete="name" placeholder="Seu nome e sobrenome" />
+      </div>
+
+      <div class="field">
+        <label for="whatsapp">WhatsApp (com DDD) <span class="req" aria-hidden="true">*</span></label>
+        <input
+          id="whatsapp"
+          name="whatsapp"
+          type="tel"
+          required
+          inputmode="tel"
+          autocomplete="tel"
+          placeholder="(98) 98126-3164"
+          aria-describedby="whatsapp_help"
+        />
+        <div id="whatsapp_help" class="help">Usaremos este número para contato e avisos do curso.</div>
+      </div>
+
+      <div class="field">
+        <label for="email">E-mail</label>
+        <input id="email" name="email" type="email" autocomplete="email" placeholder="voce@email.com" />
+        <div class="help">Opcional, mas recomendado.</div>
+      </div>
+
+      <div class="field">
+        <label for="email_pagamento">E-mail usado no pagamento (opcional)</label>
+        <input id="email_pagamento" name="email_pagamento" type="email" autocomplete="email" placeholder="email@pagamento.com" />
+        <div class="help">Ajuda na conferência do pagamento.</div>
+      </div>
+
+      <div class="field">
+        <label for="origem">Como conheceu?</label>
+        <select id="origem" name="origem">
+          <option value="">Selecione</option>
+          <option value="instagram">Instagram</option>
+          <option value="whatsapp">WhatsApp</option>
+          <option value="igreja">Igreja</option>
+          <option value="escola">Escola</option>
+        </select>
+        <div class="help">Isso nos ajuda a melhorar a divulgação.</div>
+      </div>
+    </div>
+
+    <div class="divider" role="presentation"></div>
+
+    <div class="note">
+      <div class="note__title">Endereço</div>
+      <div class="muted note__text">
+        Se preferir, informe seu endereço para cadastro interno. (Opcional)
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="field">
+        <label for="cep">CEP</label>
+        <input id="cep" name="cep" type="text" inputmode="numeric" autocomplete="postal-code" placeholder="00000-000" />
+      </div>
+
+      <div class="field">
+        <label for="uf">UF</label>
+        <input id="uf" name="uf" type="text" autocomplete="address-level1" maxlength="2" placeholder="MA" />
+      </div>
+
+      <div class="field">
+        <label for="cidade">Cidade</label>
+        <input id="cidade" name="cidade" type="text" autocomplete="address-level2" placeholder="São Luís" />
+      </div>
+
+      <div class="field">
+        <label for="bairro">Bairro</label>
+        <input id="bairro" name="bairro" type="text" autocomplete="address-level3" placeholder="Seu bairro" />
+      </div>
+
+      <div class="field" style="grid-column: 1 / -1;">
+        <label for="logradouro">Logradouro</label>
+        <input id="logradouro" name="logradouro" type="text" autocomplete="street-address" placeholder="Rua, Avenida..." />
+      </div>
+
+      <div class="field">
+        <label for="numero">Número</label>
+        <input id="numero" name="numero" type="text" inputmode="numeric" placeholder="Ex.: 123" />
+      </div>
+
+      <div class="field">
+        <label for="complemento">Complemento</label>
+        <input id="complemento" name="complemento" type="text" placeholder="Apto, bloco, referência..." />
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn--cta btn--lg" type="submit">
+        Concluir cadastro
+      </button>
+      <p class="fineprint">
+        Campos com <span class="req" aria-hidden="true">*</span> são obrigatórios. Seus dados serão usados somente para
+        contato e organização do curso.
+      </p>
+    </div>
+  </form>
+{% endblock %}

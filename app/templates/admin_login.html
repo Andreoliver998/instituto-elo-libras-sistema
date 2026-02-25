@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Instituto Elo Libras — Admin (Login){% endblock %}
+{% block description %}Acesso restrito ao painel administrativo.{% endblock %}
+
+{% block header_subtitle %}
+<!-- Acesso restrito ao administrador -->
+{% endblock %}
+
+{% block head %}
+  <style>
+    .login-title{
+      margin: 0 0 4px;
+      font-size: 18px;
+      font-weight: 950;
+      letter-spacing: .2px;
+    }
+
+    .login-sub{
+      margin: 0;
+      color: rgba(255,255,255,.74);
+      font-size: 13.5px;
+      line-height: 1.45;
+    }
+
+    .login-note{
+      display:flex;
+      flex-direction:column;
+      gap: 4px;
+      margin-bottom: 2px;
+    }
+
+    .error{
+      border-color: rgba(255,255,255,.14);
+      background: rgba(255,255,255,.05);
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+  <div class="note login-note">
+    <div class="login-title">Administrativo</div>
+    <div class="login-sub">Gestão de Alunos</div>
+  </div>
+
+  {% if error %}
+    <div class="note error" role="alert" aria-live="polite">
+      <div class="note__title">Não foi possível entrar</div>
+      <div class="note__text muted">{{ error }}</div>
+    </div>
+  {% endif %}
+
+  {% if not configured %}
+    <div class="note" role="status" aria-live="polite">
+      <div class="note__title">Painel indisponível</div>
+      <div class="note__text muted">Acesso administrativo indisponível no momento. Contate o suporte.</div>
+    </div>
+  {% endif %}
+
+  <form class="form" method="post" action="/admin/login" autocomplete="off">
+    <input type="hidden" name="next" value="{{ next }}" />
+
+    <div class="grid">
+      <div class="field span-all">
+        <label for="username">Usuário</label>
+        <input id="username" name="username" type="text" required {% if not configured %}aria-disabled="true" disabled{% endif %} />
+      </div>
+
+      <div class="field span-all">
+        <label for="password">Senha</label>
+        <input id="password" name="password" type="password" required {% if not configured %}aria-disabled="true" disabled{% endif %} />
+      </div>
+    </div>
+
+    <button class="btn btn--cta btn--lg" type="submit" {% if not configured %}aria-disabled="true" disabled{% endif %}>
+      Entrar
+    </button>
+
+    <!-- <p class="fineprint">Acesso restrito ao administrador.</p> -->
+  </form>
+{% endblock %}
