@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}Instituto Elo Libras — Admin (Logs){% endblock %}
+{% block description %}Registro de ações administrativas.{% endblock %}
+{% block card_class %}card--wide{% endblock %}
+
+{% block header_title %}Painel do Dono — Logs{% endblock %}
+{% block header_subtitle %}
+Registro de ações administrativas
+{% endblock %}
+
+{% block head %}
+  <style>
+    .top-actions{
+      display:flex;
+      gap: 10px;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .top-actions__left{
+      display:flex;
+      gap: 10px;
+      align-items:center;
+      flex-wrap: wrap;
+    }
+
+    .table-wrap{
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 16px;
+      overflow: auto;
+      max-height: 68vh;
+      background: rgba(255,255,255,.02);
+    }
+
+    table{
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      min-width: 980px;
+    }
+
+    thead th{
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      text-align: left;
+      font-size: 12px;
+      letter-spacing: .2px;
+      color: rgba(255,255,255,.86);
+      background: rgba(20,59,107,.92);
+      backdrop-filter: blur(6px);
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(255,255,255,.10);
+      white-space: nowrap;
+    }
+
+    tbody td{
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+      vertical-align: top;
+      font-size: 12.5px;
+      color: rgba(255,255,255,.88);
+    }
+
+    tbody tr:nth-child(2n){
+      background: rgba(255,255,255,.02);
+    }
+
+    .nowrap{ white-space: nowrap; }
+    .muted2{ color: rgba(255,255,255,.66); }
+  </style>
+{% endblock %}
+
+{% block content %}
+  <div class="top-actions">
+    <div class="top-actions__left">
+      <a class="btn btn--secondary btn--auto" href="/admin/alunos">Voltar para alunos</a>
+      <a class="btn btn--secondary btn--auto" href="/admin/minha-senha">Minha senha</a>
+      <form method="post" action="/admin/logout">
+        <button class="btn btn--secondary btn--auto" type="submit">Sair</button>
+      </form>
+    </div>
+    <div class="muted2">Últimos 50 eventos</div>
+  </div>
+
+  <div class="table-wrap" role="region" aria-label="Tabela de logs administrativos">
+    <table>
+      <thead>
+        <tr>
+          <th class="nowrap">Data</th>
+          <th>Ação</th>
+          <th>Admin</th>
+          <th>Aluno</th>
+          <th class="nowrap">WhatsApp</th>
+          <th class="nowrap">IP</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for e in logs %}
+          {% set action_label = e.action %}
+          {% if e.action in ["DELETE_STUDENT", "DELET_STUDENT"] %}
+            {% set action_label = "Aluno excluido" %}
+          {% endif %}
+          <tr>
+            <td class="nowrap mono muted2">{% if e.created_at %}{{ e.created_at|date_br }}{% endif %}</td>
+            <td class="nowrap"><span class="pill">{{ action_label }}</span></td>
+            <td class="mono mono-wrap">{{ e.admin_user or "" }}</td>
+            <td>
+              <div><b>{{ e.student_name or "" }}</b></div>
+              <div class="muted2 mono">{% if e.student_id %}ID: {{ e.student_id }}{% endif %}</div>
+            </td>
+            <td class="nowrap mono">{{ e.student_whatsapp or "" }}</td>
+            <td class="nowrap mono muted2">{{ e.ip or "" }}</td>
+          </tr>
+        {% endfor %}
+
+        {% if not logs %}
+          <tr>
+            <td colspan="6" class="muted2">Nenhum evento registrado.</td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

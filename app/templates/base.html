@@ -218,6 +218,16 @@
       padding: 12px;
     }
 
+    .note--success {
+      border-color: rgba(122, 205, 190, .35);
+      background: rgba(122, 205, 190, .10);
+    }
+
+    .note--danger {
+      border-color: rgba(118, 115, 108, .55);
+      background: rgba(118, 115, 108, .12);
+    }
+
     .note__title {
       font-weight: 950;
     }
@@ -346,6 +356,15 @@
       color: rgba(255, 255, 255, .92);
     }
 
+    .btn--danger {
+      border: 1px solid rgba(255, 255, 255, .16);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, .10), transparent 42%),
+        rgba(118, 115, 108, .52);
+      color: rgba(255, 255, 255, .96);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, .22);
+    }
+
     .btn--lg {
       font-size: 16px;
       padding: 14px 18px;
@@ -389,6 +408,28 @@
       font-size: 12px;
       line-height: 1.45;
       color: rgba(255, 255, 255, .60);
+    }
+
+    .danger-zone {
+      margin-top: 16px;
+      border: 1px solid rgba(118, 115, 108, .50);
+      background:
+        radial-gradient(700px 220px at 0% 0%, rgba(118, 115, 108, .16), transparent 55%),
+        rgba(255, 255, 255, .02);
+      border-radius: var(--r16);
+      padding: 14px;
+    }
+
+    .danger-zone__title {
+      font-weight: 950;
+      letter-spacing: .2px;
+    }
+
+    .danger-zone__text {
+      margin-top: 6px;
+      font-size: 13px;
+      line-height: 1.45;
+      color: rgba(255, 255, 255, .74);
     }
 
     /* Mobile */

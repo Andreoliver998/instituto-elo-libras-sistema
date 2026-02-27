@@ -1,16 +1,39 @@
 import hmac
 import os
+import logging
 from urllib.parse import urlencode, urlparse
 
 from fastapi import Request
 from fastapi.responses import RedirectResponse
+from passlib.context import CryptContext
+from sqlalchemy.orm import Session
+from sqlalchemy.exc import OperationalError
 from starlette.status import HTTP_303_SEE_OTHER
+
+from .models import AdminUser
 
 DEFAULT_ADMIN_HOME = "/admin/alunos"
 
+logging.getLogger("passlib.handlers.bcrypt").setLevel(logging.ERROR)
+pwd_context = CryptContext(schemes=["bcrypt_sha256", "bcrypt"], deprecated="auto")
 
-def admin_is_configured() -> bool:
+def _env_admin_is_configured() -> bool:
     return bool((os.getenv("ADMIN_USER") or "").strip()) and bool((os.getenv("ADMIN_PASS") or "").strip())
+
+
+def admin_db_is_configured(db: Session) -> bool:
+    try:
+        return db.query(AdminUser.id).first() is not None
+    except OperationalError:
+        return False
+
+
+def admin_is_configured(db: Session | None = None) -> bool:
+    if _env_admin_is_configured():
+        return True
+    if db is None:
+        return False
+    return admin_db_is_configured(db)
 
 
 def is_admin_logged_in(request: Request) -> bool:
@@ -57,6 +80,39 @@ def verify_admin_credentials(username: str, password: str) -> bool:
     )
 
 
+def hash_password(password: str) -> str:
+    try:
+        return pwd_context.hash(password)
+    except Exception as exc:
+        raise ValueError("Password hashing failed") from exc
+
+
+def verify_password(password: str, hashed: str) -> bool:
+    try:
+        return pwd_context.verify(password, hashed)
+    except Exception:
+        return False
+
+
+def verify_admin_credentials_db(db: Session, username: str, password: str) -> AdminUser | None:
+    clean_username = (username or "").strip()
+    if not clean_username or not password:
+        return None
+
+    user = (
+        db.query(AdminUser)
+        .filter(AdminUser.username == clean_username, AdminUser.is_active.is_(True))
+        .first()
+    )
+    if not user:
+        return None
+
+    if not verify_password(password, user.password_hash):
+        return None
+
+    return user
+
+
 def login_redirect(next_value: str) -> RedirectResponse:
     return RedirectResponse(
         url=f"/admin/login?{urlencode({'next': safe_next(next_value)})}",
@@ -64,8 +120,8 @@ def login_redirect(next_value: str) -> RedirectResponse:
     )
 
 
-def require_admin(request: Request) -> RedirectResponse | None:
-    if not admin_is_configured():
+def require_admin(request: Request, db: Session | None = None) -> RedirectResponse | None:
+    if not admin_is_configured(db):
         current = request.url.path
         if request.url.query:
             current = f"{current}?{request.url.query}"

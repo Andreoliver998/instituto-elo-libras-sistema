@@ -44,6 +44,8 @@ Ver e editar cadastro
   <div class="top-actions">
     <div class="top-actions__left">
       <a class="btn btn--secondary btn--auto" href="/admin/alunos">Voltar para lista</a>
+      <a class="btn btn--secondary btn--auto" href="/admin/minha-senha">Minha senha</a>
+      <a class="btn btn--secondary btn--auto" href="/admin/logs">Registros</a>
       <form method="post" action="/admin/logout">
         <button class="btn btn--secondary btn--auto" type="submit">Sair</button>
       </form>
@@ -51,7 +53,7 @@ Ver e editar cadastro
     <div class="kpi">
       <span>ID: <b class="mono">{{ aluno.id }}</b></span>
       <span>Status atual: <b>{{ aluno.status or "cadastrado" }}</b></span>
-      <span>Criado em: <b class="mono">{% if aluno.created_at %}{{ aluno.created_at }}{% endif %}</b></span>
+      <span>Criado em: <b class="mono">{% if aluno.created_at %}{{ aluno.created_at|date_br }}{% endif %}</b></span>
     </div>
   </div>
 
@@ -75,6 +77,12 @@ Ver e editar cadastro
       <div class="field">
         <label for="email">E-mail</label>
         <input id="email" name="email" type="email" value="{{ aluno.email or '' }}" placeholder="(opcional)" />
+      </div>
+
+      <div class="field">
+        <label for="cpf">CPF</label>
+        <input id="cpf" name="cpf" type="text" value="{{ aluno.cpf|cpf_br if aluno.cpf else '' }}" placeholder="(opcional)" />
+        <div class="help">Opcional. Use somente números ou no formato 000.000.000-00.</div>
       </div>
 
       <div class="field">
@@ -147,4 +155,38 @@ Ver e editar cadastro
       Salvar alterações
     </button>
   </form>
+
+  <div id="danger" class="danger-zone" tabindex="-1">
+    <div class="danger-zone__title">Zona de risco</div>
+    <div class="danger-zone__text">
+      Excluir este cadastro remove definitivamente do sistema. Esta ação não pode ser desfeita.
+    </div>
+
+    {% if danger_error %}
+      <div class="note note--danger" role="alert" aria-live="polite" style="margin-top: 10px;">
+        <div class="note__title">{{ danger_error }}</div>
+      </div>
+    {% endif %}
+
+    <form
+      class="form"
+      method="post"
+      action="/admin/alunos/{{ aluno.id }}/delete"
+      autocomplete="off"
+      onsubmit="return confirm('Tem certeza? Esta ação é definitiva e não pode ser desfeita.');"
+      style="margin-top: 12px;"
+    >
+      <div class="grid">
+        <div class="field span-all">
+          <label for="confirm_text">Para confirmar, digite <span class="req" aria-hidden="true">EXCLUIR</span></label>
+          <input id="confirm_text" name="confirm_text" type="text" required autocomplete="off" spellcheck="false" />
+          <div class="help">Digite EXCLUIR exatamente para confirmar.</div>
+        </div>
+      </div>
+
+      <button class="btn btn--danger btn--lg" type="submit">
+        Excluir definitivamente
+      </button>
+    </form>
+  </div>
 {% endblock %}

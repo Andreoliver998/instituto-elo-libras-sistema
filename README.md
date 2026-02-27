@@ -89,6 +89,10 @@ Admin (restrito):
 - `/admin/alunos` (painel)
 - `/admin/alunos/{id}` (editar aluno)
 - `/admin/alunos.csv` (exportação CSV)
+- `/admin/logs` (logs administrativos)
+
+Configuração inicial (apenas 1 vez):
+- `/setup` (cria o primeiro e único administrador "owner"; depois retorna 404)
 
 ## Deploy (Render)
 ### Passo a passo

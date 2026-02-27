@@ -10,240 +10,258 @@ Gerenciamento de cadastros
 {% endblock %}
 
 {% block head %}
-  <style>
-    .admin-top{
-      display:flex;
-      gap: 10px;
-      align-items:center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      margin-bottom: 10px;
-    }
+<style>
+  .admin-top {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
 
-    .admin-controls{
-      display:flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 12px;
-    }
+  .admin-controls {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
 
-    .admin-controls__left{
-      display:flex;
-      gap: 10px;
-      flex: 1 1 520px;
-      align-items:center;
-      min-width: 260px;
-    }
+  .admin-controls__left {
+    display: flex;
+    gap: 10px;
+    flex: 1 1 520px;
+    align-items: center;
+    min-width: 260px;
+  }
 
-    .admin-controls__right{
-      display:flex;
-      gap: 10px;
-      flex: 0 0 auto;
-      align-items:center;
-      justify-content:flex-end;
-    }
+  .admin-controls__right {
+    display: flex;
+    gap: 10px;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: flex-end;
+  }
 
-    .admin-controls input{
-      width: 100%;
-      padding: 10px 12px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: var(--panel2);
-      color: var(--text);
-      outline: none;
-    }
+  .admin-controls input {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, .10);
+    background: var(--panel2);
+    color: var(--text);
+    outline: none;
+  }
 
-    .admin-controls input::placeholder{ color: rgba(255,255,255,.48); }
-    .admin-controls input:focus-visible{
-      border-color: rgba(122,205,190,.70);
-      box-shadow: 0 0 0 4px var(--focus);
-    }
+  .admin-controls input::placeholder {
+    color: rgba(255, 255, 255, .48);
+  }
 
-    .admin-meta{
-      display:flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items:center;
-      justify-content: space-between;
-      margin: 10px 0 12px;
-      color: rgba(255,255,255,.70);
-      font-size: 12.5px;
-    }
+  .admin-controls input:focus-visible {
+    border-color: rgba(122, 205, 190, .70);
+    box-shadow: 0 0 0 4px var(--focus);
+  }
 
-    .table-wrap{
-      border: 1px solid rgba(255,255,255,.10);
-      border-radius: 16px;
-      overflow: auto;
-      max-height: 68vh;
-      background: rgba(255,255,255,.02);
-    }
+  .admin-meta {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    margin: 10px 0 12px;
+    color: rgba(255, 255, 255, .70);
+    font-size: 12.5px;
+  }
 
-    table{
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-      min-width: 980px;
-    }
+  .table-wrap {
+    border: 1px solid rgba(255, 255, 255, .10);
+    border-radius: 16px;
+    overflow: auto;
+    max-height: 68vh;
+    background: rgba(255, 255, 255, .02);
+  }
 
-    thead th{
-      position: sticky;
-      top: 0;
-      z-index: 1;
-      text-align: left;
-      font-size: 12px;
-      letter-spacing: .2px;
-      color: rgba(255,255,255,.86);
-      background: rgba(20,59,107,.92);
-      backdrop-filter: blur(6px);
-      padding: 10px 12px;
-      border-bottom: 1px solid rgba(255,255,255,.10);
-      white-space: nowrap;
-    }
+  table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    min-width: 980px;
+  }
 
-    tbody td{
-      padding: 10px 12px;
-      border-bottom: 1px solid rgba(255,255,255,.06);
-      vertical-align: top;
-      font-size: 12.5px;
-      color: rgba(255,255,255,.88);
-    }
+  thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    text-align: left;
+    font-size: 12px;
+    letter-spacing: .2px;
+    color: rgba(255, 255, 255, .86);
+    background: rgba(20, 59, 107, .92);
+    backdrop-filter: blur(6px);
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, .10);
+    white-space: nowrap;
+  }
 
-    tbody tr:nth-child(2n){
-      background: rgba(255,255,255,.02);
-    }
+  tbody td {
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, .06);
+    vertical-align: top;
+    font-size: 12.5px;
+    color: rgba(255, 255, 255, .88);
+  }
 
-    .nowrap{ white-space: nowrap; }
-    .muted2{ color: rgba(255,255,255,.66); }
+  tbody tr:nth-child(2n) {
+    background: rgba(255, 255, 255, .02);
+  }
 
-    .pager{
-      display:flex;
-      gap: 10px;
-      align-items:center;
-      justify-content: space-between;
-      margin-top: 12px;
-      flex-wrap: wrap;
-    }
+  .nowrap {
+    white-space: nowrap;
+  }
 
-    .pager__info{
-      color: rgba(255,255,255,.66);
-      font-size: 12.5px;
-    }
+  .muted2 {
+    color: rgba(255, 255, 255, .66);
+  }
 
-    .pager__actions{
-      display:flex;
-      gap: 8px;
-      align-items:center;
-    }
+  .pager {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
 
-    .kpi-card{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-bottom:12px;
-    }
-  </style>
+  .pager__info {
+    color: rgba(255, 255, 255, .66);
+    font-size: 12.5px;
+  }
+
+  .pager__actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .kpi-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+</style>
 {% endblock %}
 
 {% block content %}
-  <div class="admin-top">
-    <div class="muted2">Administrador</div>
+<div class="admin-top">
+  <div class="muted2">Administrador</div>
+  <div style="display:flex; gap: 10px; align-items:center;">
+    <a class="btn btn--secondary btn--auto" href="/admin/minha-senha">Redefinir senha</a>
+    <a class="btn btn--secondary btn--auto" href="/admin/logs">Registros</a>
     <form method="post" action="/admin/logout">
       <button class="btn btn--secondary btn--auto" type="submit">Sair</button>
     </form>
   </div>
+</div>
 
-  <form class="admin-controls" method="get" action="/admin/alunos" autocomplete="off">
-    <div class="admin-controls__left">
-      <input
-        type="text"
-        name="q"
-        value="{{ q }}"
-        placeholder="Buscar por nome, WhatsApp ou e-mail"
-        aria-label="Buscar"
-      />
-      <input type="hidden" name="per_page" value="{{ per_page }}" />
-      <button class="btn btn--secondary btn--auto" type="submit">Buscar</button>
-    </div>
+{% if msg == "deleted" %}
+<div class="note note--success" role="status" aria-live="polite" style="margin-bottom: 12px;">
+  <div class="note__title">Cadastro excluído com sucesso.</div>
+</div>
+{% endif %}
 
-    <div class="admin-controls__right">
-      <a class="btn btn--cta btn--auto" href="/admin/alunos.csv{% if q %}?q={{ q|urlencode }}{% endif %}">
-        Exportar CSV
-      </a>
-    </div>
-  </form>
-
-  <div class="note kpi-card">
-    <div class="note__title">Total de inscritos: <span class="mono">{{ total }}</span></div>
-    <div class="muted2">Ordenado por data (mais recentes primeiro)</div>
+<form class="admin-controls" method="get" action="/admin/alunos" autocomplete="off">
+  <div class="admin-controls__left">
+    <input type="text" name="q" value="{{ q }}" placeholder="Buscar por nome, WhatsApp, e-mail ou CPF"
+      aria-label="Buscar" />
+    <input type="hidden" name="per_page" value="{{ per_page }}" />
+    <button class="btn btn--secondary btn--auto" type="submit">Buscar</button>
   </div>
 
-  <div class="table-wrap" role="region" aria-label="Tabela de alunos cadastrados">
-    <table>
-      <thead>
-        <tr>
-          <th>Nome</th>
-          <th class="nowrap">WhatsApp</th>
-          <th>E-mail</th>
-          <th>Origem</th>
-          <th class="nowrap">Cidade/UF</th>
-          <th>Endereço</th>
-          <th class="nowrap">CEP</th>
-          <th class="nowrap">Status</th>
-          <th class="nowrap">Data</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for a in alunos %}
-          <tr>
-            <td><b>{{ a.nome }}</b></td>
-            <td class="nowrap mono">{{ a.whatsapp }}</td>
-            <td class="mono mono-wrap">{{ a.email or "" }}</td>
-            <td class="muted2">{{ a.origem or "" }}</td>
-            <td class="nowrap">{{ (a.cidade or "") }}{% if a.uf %}/{{ a.uf }}{% endif %}</td>
-            <td>
-              <div>{{ a.bairro or "" }}</div>
-              <div class="muted2">
-                {{ a.logradouro or "" }}{% if a.numero %}, {{ a.numero }}{% endif %}{% if a.complemento %} — {{ a.complemento }}{% endif %}
-              </div>
-            </td>
-            <td class="nowrap mono">{{ a.cep or "" }}</td>
-            <td class="nowrap">
-              <span class="pill">{{ a.status or "cadastrado" }}</span>
-            </td>
-            <td class="nowrap mono muted2">{% if a.created_at %}{{ a.created_at }}{% endif %}</td>
-            <td class="nowrap">
-              <a class="btn btn--secondary btn--sm" href="/admin/alunos/{{ a.id }}">Ver/Editar</a>
-            </td>
-          </tr>
-        {% endfor %}
-
-        {% if not alunos %}
-          <tr>
-            <td colspan="11" class="muted2">Nenhum cadastro encontrado.</td>
-          </tr>
-        {% endif %}
-      </tbody>
-    </table>
+  <div class="admin-controls__right">
+    <a class="btn btn--cta btn--auto" href="/admin/alunos.csv{% if q %}?q={{ q|urlencode }}{% endif %}">
+      Exportar CSV
+    </a>
   </div>
+</form>
 
-  <div class="pager">
-    <div class="pager__info">
-      Página <b>{{ page }}</b> de <b>{{ total_pages }}</b> — {{ per_page }} por página
-    </div>
-    <div class="pager__actions">
-      {% set qp = "" %}
-      {% if q %}{% set qp = "&q=" ~ (q|urlencode) %}{% endif %}
-      {% if page > 1 %}
-        <a class="btn btn--secondary btn--auto" href="/admin/alunos?page={{ page - 1 }}&per_page={{ per_page }}{{ qp }}">Anterior</a>
+<div class="note kpi-card">
+  <div class="note__title">Total de inscritos: <span class="mono">{{ total }}</span></div>
+  <div class="muted2">Dados mais recentes</div>
+</div>
+
+<div class="table-wrap" role="region" aria-label="Tabela de alunos cadastrados">
+  <table>
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th class="nowrap">WhatsApp</th>
+        <th>E-mail</th>
+        <th class="nowrap">CPF</th>
+        <th>Origem</th>
+        <th class="nowrap">Cidade/UF</th>
+        <th>Endereço</th>
+        <th class="nowrap">CEP</th>
+        <th class="nowrap">Status</th>
+        <th class="nowrap">Data</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for a in alunos %}
+      <tr>
+        <td><b>{{ a.nome }}</b></td>
+        <td class="nowrap mono">{{ a.whatsapp }}</td>
+        <td class="mono mono-wrap">{{ a.email or "" }}</td>
+        <td class="nowrap mono">{{ a.cpf|cpf_br if a.cpf else "" }}</td>
+        <td class="muted2">{{ a.origem or "" }}</td>
+        <td class="nowrap">{{ (a.cidade or "") }}{% if a.uf %}/{{ a.uf }}{% endif %}</td>
+        <td>
+          <div>{{ a.bairro or "" }}</div>
+          <div class="muted2">
+            {{ a.logradouro or "" }}{% if a.numero %}, {{ a.numero }}{% endif %}{% if a.complemento %} — {{
+            a.complemento }}{% endif %}
+          </div>
+        </td>
+        <td class="nowrap mono">{{ a.cep or "" }}</td>
+        <td class="nowrap">
+          <span class="pill">{{ a.status or "cadastrado" }}</span>
+        </td>
+        <td class="nowrap mono muted2">{% if a.created_at %}{{ a.created_at|date_br }}{% endif %}</td>
+        <td class="nowrap">
+          <a class="btn btn--secondary btn--sm" href="/admin/alunos/{{ a.id }}">Ver/Editar</a>
+          <a class="btn btn--secondary btn--sm" href="/admin/alunos/{{ a.id }}#danger">Excluir</a>
+        </td>
+      </tr>
+      {% endfor %}
+
+      {% if not alunos %}
+      <tr>
+        <td colspan="11" class="muted2">Nenhum cadastro encontrado.</td>
+      </tr>
       {% endif %}
-      {% if page < total_pages %}
-        <a class="btn btn--secondary btn--auto" href="/admin/alunos?page={{ page + 1 }}&per_page={{ per_page }}{{ qp }}">Próxima</a>
-      {% endif %}
-    </div>
+    </tbody>
+  </table>
+</div>
+
+<div class="pager">
+  <div class="pager__info">
+    Página <b>{{ page }}</b> de <b>{{ total_pages }}</b> — {{ per_page }} por página
   </div>
+  <div class="pager__actions">
+    {% set qp = "" %}
+    {% if q %}{% set qp = "&q=" ~ (q|urlencode) %}{% endif %}
+    {% if page > 1 %}
+    <a class="btn btn--secondary btn--auto"
+      href="/admin/alunos?page={{ page - 1 }}&per_page={{ per_page }}{{ qp }}">Anterior</a>
+    {% endif %}
+    {% if page < total_pages %} <a class="btn btn--secondary btn--auto"
+      href="/admin/alunos?page={{ page + 1 }}&per_page={{ per_page }}{{ qp }}">Próxima</a>
+      {% endif %}
+  </div>
+</div>
 {% endblock %}

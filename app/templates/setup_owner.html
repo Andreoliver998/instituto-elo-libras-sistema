@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Instituto Elo Libras — Configuração inicial{% endblock %}
+{% block description %}Configuração inicial do sistema.{% endblock %}
+
+{% block header_title %}Configuração inicial do sistema{% endblock %}
+{% block header_subtitle %}
+Crie o acesso do administrador (dono)
+{% endblock %}
+
+{% block content %}
+  <p class="fineprint">
+    Essa configuração é realizada apenas uma vez.
+  </p>
+
+  <div class="divider" role="presentation"></div>
+
+  {% if error %}
+    <div class="note note--danger" role="alert" aria-live="polite" style="margin-bottom: 12px;">
+      <div class="note__title">{{ error }}</div>
+    </div>
+  {% endif %}
+
+  <form class="form" method="post" action="/setup" autocomplete="off">
+    <div class="grid">
+      <div class="field span-all">
+        <label for="username">Usuário <span class="req" aria-hidden="true">*</span></label>
+        <input id="username" name="username" type="text" required value="{{ username or '' }}" />
+      </div>
+
+      <div class="field">
+        <label for="password">Senha <span class="req" aria-hidden="true">*</span></label>
+        <input id="password" name="password" type="password" required minlength="8" />
+        <div class="help">Mínimo de 8 caracteres.</div>
+      </div>
+
+      <div class="field">
+        <label for="password_confirm">Confirmar senha <span class="req" aria-hidden="true">*</span></label>
+        <input id="password_confirm" name="confirm_password" type="password" required minlength="8" />
+      </div>
+    </div>
+
+    <button class="btn btn--cta btn--lg" type="submit">
+      Criar acesso
+    </button>
+  </form>
+{% endblock %}
