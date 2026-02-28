@@ -55,6 +55,8 @@ Este projeto lê configurações via variáveis de ambiente (não commite links/
 
 Crie um arquivo `.env` baseado em `.env.example` (sem commitar) e configure as variáveis conforme necessário.
 
+Em desenvolvimento, se preferir separar do `.env`, use `.env.local` (também ignorado pelo Git) e exporte as variáveis antes de rodar o Uvicorn.
+
 Variáveis:
 - `DATABASE_URL` = conexão do banco (SQLite por padrão; PostgreSQL opcional)
 - `CHECKOUT_URL` = link do checkout (Mercado Pago) — em dev você pode usar `/obrigado` para simular o fluxo
@@ -111,7 +113,13 @@ Configuração inicial (apenas 1 vez):
    - `ADMIN_SECRET_KEY`
    - `WHATSAPP_GROUP_URL` (opcional)
 6) No Mercado Pago, configure a **URL de sucesso** para:
-   - `https://SEUAPP.onrender.com/obrigado`
+    - `https://SEUAPP.onrender.com/obrigado`
+
+## Deploy (VPS / Ubuntu + systemd + nginx)
+Fluxo recomendado para VPS (sem commitar segredos):
+1) Faça deploy do código via Git para uma pasta (ex.: `/var/www/institutoelolibras`) e execute o app com um serviço `systemd`.
+2) Crie/edite o arquivo `/var/www/institutoelolibras/.env` com as variáveis do `.env.example` (valores reais somente na VPS).
+3) Reinicie o serviço do app e recarregue o Nginx.
 
 ### Checklist final (antes de publicar)
 - `uvicorn app.main:app --reload`
