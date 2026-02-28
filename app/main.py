@@ -161,8 +161,12 @@ Base.metadata.create_all(bind=engine)
 _sqlite_ensure_students_columns()
 _sqlite_ensure_admin_users_columns()
 
-CHECKOUT_URL = (os.getenv("CHECKOUT_URL") or "/obrigado").strip()
-WHATSAPP_GROUP_URL = (os.getenv("WHATSAPP_GROUP_URL") or "").strip()
+def _get_checkout_url() -> str:
+    return (os.getenv("CHECKOUT_URL") or "").strip()
+
+def _get_whatsapp_group_url() -> str:
+    return (os.getenv("WHATSAPP_GROUP_URL") or "").strip()
+
 ADMIN_STATUS_OPTIONS = ["cadastrado", "pago", "pendente", "concluido"]
 EXPORT_COLUMNS = [
     "Nome",
@@ -471,7 +475,7 @@ def admin_splash(request: Request, next: str | None = None):
 
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request):
-    checkout_value = (CHECKOUT_URL or "").strip()
+    checkout_value = _get_checkout_url()
     checkout_enabled = _is_valid_http_url(checkout_value)
     return templates.TemplateResponse(
         "home.html",
@@ -548,19 +552,21 @@ def cadastro_submit(
     db.commit()
     db.refresh(aluno)
 
+    whatsapp_group_url = _get_whatsapp_group_url()
     return templates.TemplateResponse(
         "sucesso.html",
-        {"request": request, "nome": aluno.nome, "whatsapp_group_url": WHATSAPP_GROUP_URL},
+        {"request": request, "nome": aluno.nome, "whatsapp_group_url": whatsapp_group_url},
     )
 
 @app.get("/sucesso", response_class=HTMLResponse)
 def sucesso(request: Request, nome: str | None = None):
+    whatsapp_group_url = _get_whatsapp_group_url()
     return templates.TemplateResponse(
         "sucesso.html",
         {
             "request": request,
             "nome": (nome or "Aluno").strip() or "Aluno",
-            "whatsapp_group_url": WHATSAPP_GROUP_URL,
+            "whatsapp_group_url": whatsapp_group_url,
         },
     )
 

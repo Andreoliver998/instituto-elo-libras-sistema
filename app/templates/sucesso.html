@@ -10,7 +10,7 @@ Seu cadastro foi registrado com sucesso.
 
 {% block content %}
   <p class="muted lead">
-    Obrigado, <b>{{ nome }}</b>! Para receber as orientações da turma e o link das aulas ao vivo, fale conosco pelo WhatsApp.
+    Obrigado, <b>{{ nome }}</b>! Para receber as orientações da turma e o link das aulas ao vivo, entre no grupo do WhatsApp.
   </p>
 
   <div class="divider" role="presentation"></div>
@@ -20,14 +20,14 @@ Seu cadastro foi registrado com sucesso.
        href="{{ whatsapp_group_url }}"
        target="_blank"
        rel="noopener noreferrer">
-       Falar no WhatsApp
+       Entrar no grupo do WhatsApp
     </a>
   {% else %}
-     <span class="btn btn--cta" aria-disabled="true">
-       WhatsApp indisponível
+      <span class="btn btn--cta" aria-disabled="true">
+       Link do grupo indisponível no momento
     </span>
     <p class="foot">
-      O link do WhatsApp ainda não foi configurado.
+      Tente novamente mais tarde.
     </p>
   {% endif %}
 
