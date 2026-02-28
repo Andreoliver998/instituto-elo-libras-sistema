@@ -182,12 +182,18 @@ Gerenciamento de cadastros
     <button class="btn btn--secondary btn--auto" type="submit">Buscar</button>
   </div>
 
-  <div class="admin-controls__right">
-    <a class="btn btn--cta btn--auto" href="/admin/alunos.csv{% if q %}?q={{ q|urlencode }}{% endif %}">
-      Exportar CSV
-    </a>
-  </div>
-</form>
+    <div class="admin-controls__right">
+      <a class="btn btn--secondary btn--auto" href="/admin/cadastros/export/pdf{% if q %}?q={{ q|urlencode }}{% endif %}">
+        Baixar PDF
+      </a>
+      <a class="btn btn--secondary btn--auto" href="/admin/cadastros/export/docx{% if q %}?q={{ q|urlencode }}{% endif %}">
+        Baixar Word
+      </a>
+      <a class="btn btn--cta btn--auto" href="/admin/alunos.csv{% if q %}?q={{ q|urlencode }}{% endif %}">
+        Exportar CSV
+      </a>
+    </div>
+  </form>
 
 <div class="note kpi-card">
   <div class="note__title">Total de inscritos: <span class="mono">{{ total }}</span></div>

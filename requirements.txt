@@ -7,3 +7,5 @@ python-multipart
 itsdangerous
 passlib[bcrypt]
 bcrypt==4.0.1
+python-docx
+reportlab

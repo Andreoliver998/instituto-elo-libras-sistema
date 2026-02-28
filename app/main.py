@@ -2,10 +2,11 @@ import os
 import secrets
 from datetime import datetime
 from pathlib import Path, PurePosixPath
+from io import BytesIO
 from typing import Iterable
 from urllib.parse import quote, urlencode, urlparse
 from fastapi import FastAPI, Request, Form, Depends, HTTPException
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, StreamingResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
@@ -163,6 +164,16 @@ _sqlite_ensure_admin_users_columns()
 CHECKOUT_URL = (os.getenv("CHECKOUT_URL") or "/obrigado").strip()
 WHATSAPP_GROUP_URL = (os.getenv("WHATSAPP_GROUP_URL") or "").strip()
 ADMIN_STATUS_OPTIONS = ["cadastrado", "pago", "pendente", "concluido"]
+EXPORT_COLUMNS = [
+    "Nome",
+    "WhatsApp",
+    "E-mail",
+    "E-mail do pagamento",
+    "CPF",
+    "Origem",
+    "Endereço",
+    "Data",
+]
 
 def _is_valid_http_url(value: str) -> bool:
     value = (value or "").strip()
@@ -208,6 +219,83 @@ def _clean_status(value: str | None) -> str:
     if cleaned in ADMIN_STATUS_OPTIONS:
         return cleaned
     return "cadastrado"
+
+
+def _students_query(db: Session, q: str | None):
+    query = db.query(Student)
+    search = (q or "").strip()
+    if search:
+        like = f"%{search}%"
+        query = query.filter(
+            or_(
+                Student.nome.ilike(like),
+                Student.whatsapp.ilike(like),
+                Student.email.ilike(like),
+                Student.cpf.ilike(like),
+            )
+        )
+    return query, search
+
+
+def _student_export_row(student: Student) -> list[str]:
+    nome = getattr(student, "nome", "") or getattr(student, "name", "") or ""
+    whatsapp = getattr(student, "whatsapp", "") or getattr(student, "phone", "") or ""
+    email = getattr(student, "email", "") or ""
+    email_pagamento = getattr(student, "email_pagamento", "") or getattr(student, "payment_email", "") or ""
+    origem = getattr(student, "origem", "") or ""
+    cpf = getattr(student, "cpf", "") or ""
+
+    endereco = getattr(student, "endereco", "") or ""
+    if not endereco:
+        parts: list[str] = []
+        logradouro = getattr(student, "logradouro", "") or ""
+        numero = getattr(student, "numero", "") or ""
+        complemento = getattr(student, "complemento", "") or ""
+        bairro = getattr(student, "bairro", "") or ""
+        cidade = getattr(student, "cidade", "") or ""
+        uf = getattr(student, "uf", "") or ""
+        cep = getattr(student, "cep", "") or ""
+
+        rua = (logradouro or "").strip()
+        if rua:
+            if (numero or "").strip():
+                rua = f"{rua}, {numero.strip()}"
+            parts.append(rua)
+
+        if (complemento or "").strip():
+            parts.append(complemento.strip())
+
+        if (bairro or "").strip():
+            parts.append(bairro.strip())
+
+        cidade_uf = ""
+        if (cidade or "").strip():
+            cidade_uf = cidade.strip()
+        if (uf or "").strip():
+            cidade_uf = f"{cidade_uf}/{uf.strip()}" if cidade_uf else uf.strip()
+        if cidade_uf:
+            parts.append(cidade_uf)
+
+        if (cep or "").strip():
+            parts.append(f"CEP {cep.strip()}")
+
+        endereco = " — ".join([p for p in parts if p])
+
+    created_at = getattr(student, "created_at", None) or getattr(student, "createdAt", None)
+    created_str = ""
+    if isinstance(created_at, datetime):
+        created_str = created_at.strftime("%d/%m/%Y")
+
+    return [
+        str(nome or ""),
+        str(whatsapp or ""),
+        str(email or ""),
+        str(email_pagamento or ""),
+        str(cpf or ""),
+        str(origem or ""),
+        str(endereco or ""),
+        str(created_str or ""),
+    ]
 
 @app.get("/admin/login", response_class=HTMLResponse)
 def admin_login_form(
@@ -491,19 +579,7 @@ def admin_alunos(
 
     safe_page = max(1, page)
     safe_per_page = min(max(1, per_page), 200)
-    query = db.query(Student)
-
-    search = (q or "").strip()
-    if search:
-        like = f"%{search}%"
-        query = query.filter(
-            or_(
-                Student.nome.ilike(like),
-                Student.whatsapp.ilike(like),
-                Student.email.ilike(like),
-                Student.cpf.ilike(like),
-            )
-        )
+    query, search = _students_query(db, q)
 
     total = query.count()
     alunos = (
@@ -690,18 +766,7 @@ def admin_alunos_csv(
     import csv
     import io
 
-    query = db.query(Student)
-    search = (q or "").strip()
-    if search:
-        like = f"%{search}%"
-        query = query.filter(
-            or_(
-                Student.nome.ilike(like),
-                Student.whatsapp.ilike(like),
-                Student.email.ilike(like),
-                Student.cpf.ilike(like),
-            )
-        )
+    query, search = _students_query(db, q)
 
     alunos = query.order_by(Student.created_at.desc()).all()
 
@@ -768,6 +833,130 @@ def admin_alunos_csv(
     return StreamingResponse(
         iter_rows(alunos),
         media_type="text/csv; charset=utf-8",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
+
+
+@app.get("/admin/cadastros/export/docx")
+def admin_cadastros_export_docx(
+    request: Request,
+    q: str | None = None,
+    db: Session = Depends(get_db),
+):
+    redirect = require_admin(request, db)
+    if redirect:
+        return redirect
+
+    from docx import Document
+
+    query, _search = _students_query(db, q)
+    alunos = query.order_by(Student.created_at.desc()).all()
+
+    now = datetime.now()
+    doc = Document()
+    doc.add_heading("Relatório de Cadastros — Instituto Elo Libras", level=1)
+    doc.add_paragraph(f"Gerado em: {now.strftime('%d/%m/%Y %H:%M')}")
+
+    if not alunos:
+        doc.add_paragraph("Nenhum cadastro encontrado.")
+    else:
+        table = doc.add_table(rows=1, cols=len(EXPORT_COLUMNS))
+        table.style = "Table Grid"
+        header_cells = table.rows[0].cells
+        for idx, title in enumerate(EXPORT_COLUMNS):
+            header_cells[idx].text = title
+
+        for aluno in alunos:
+            row_cells = table.add_row().cells
+            values = _student_export_row(aluno)
+            for idx, value in enumerate(values):
+                row_cells[idx].text = value
+
+    buf = BytesIO()
+    doc.save(buf)
+    buf.seek(0)
+
+    filename = f"cadastros_instituto_elo_libras_{now.strftime('%Y-%m-%d')}.docx"
+    return StreamingResponse(
+        buf,
+        media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
+
+
+@app.get("/admin/cadastros/export/pdf")
+def admin_cadastros_export_pdf(
+    request: Request,
+    q: str | None = None,
+    db: Session = Depends(get_db),
+):
+    redirect = require_admin(request, db)
+    if redirect:
+        return redirect
+
+    from reportlab.lib import colors
+    from reportlab.lib.pagesizes import A4
+    from reportlab.lib.styles import getSampleStyleSheet
+    from reportlab.platypus import SimpleDocTemplate, Spacer, Paragraph, Table, TableStyle
+
+    query, _search = _students_query(db, q)
+    alunos = query.order_by(Student.created_at.desc()).all()
+
+    now = datetime.now()
+    buf = BytesIO()
+    doc = SimpleDocTemplate(
+        buf,
+        pagesize=A4,
+        leftMargin=36,
+        rightMargin=36,
+        topMargin=36,
+        bottomMargin=36,
+        title="Relatório de Cadastros — Instituto Elo Libras",
+    )
+
+    styles = getSampleStyleSheet()
+    story: list = []
+    story.append(Paragraph("Instituto Elo Libras", styles["Title"]))
+    story.append(Paragraph("Relatório de Cadastros", styles["Heading2"]))
+    story.append(Paragraph(f"Gerado em: {now.strftime('%d/%m/%Y %H:%M')}", styles["Normal"]))
+    story.append(Spacer(1, 12))
+
+    if not alunos:
+        story.append(Paragraph("Nenhum cadastro encontrado.", styles["Normal"]))
+    else:
+        data = [EXPORT_COLUMNS]
+        for aluno in alunos:
+            data.append(_student_export_row(aluno))
+
+        table = Table(data, repeatRows=1)
+        table.setStyle(
+            TableStyle(
+                [
+                    ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#143B6B")),
+                    ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+                    ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                    ("FONTSIZE", (0, 0), (-1, 0), 9),
+                    ("ALIGN", (0, 0), (-1, 0), "LEFT"),
+                    ("GRID", (0, 0), (-1, -1), 0.25, colors.HexColor("#7ACDBE")),
+                    ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                    ("FONTSIZE", (0, 1), (-1, -1), 8),
+                    ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#F3F7FA")]),
+                    ("LEFTPADDING", (0, 0), (-1, -1), 4),
+                    ("RIGHTPADDING", (0, 0), (-1, -1), 4),
+                    ("TOPPADDING", (0, 0), (-1, -1), 3),
+                    ("BOTTOMPADDING", (0, 0), (-1, -1), 3),
+                ]
+            )
+        )
+        story.append(table)
+
+    doc.build(story)
+    buf.seek(0)
+
+    filename = f"cadastros_instituto_elo_libras_{now.strftime('%Y-%m-%d')}.pdf"
+    return StreamingResponse(
+        buf,
+        media_type="application/pdf",
         headers={"Content-Disposition": f'attachment; filename="{filename}"'},
     )
 
