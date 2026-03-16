@@ -2,6 +2,7 @@
 
 {% block title %}Instituto Elo Libras — Admin (Login){% endblock %}
 {% block description %}Acesso restrito ao painel administrativo.{% endblock %}
+<!-- Desenvolvido por: Carlos André Almeida de Oliveira -->
 
 {% block header_subtitle %}
 <!-- Acesso restrito ao administrador -->
@@ -18,7 +19,7 @@
 
   .login-sub {
     margin: 0;
-    color: rgba(255, 255, 255, .74);
+    color: var(--text-secondary);
     font-size: 13.5px;
     line-height: 1.45;
   }
@@ -31,8 +32,8 @@
   }
 
   .error {
-    border-color: rgba(255, 255, 255, .14);
-    background: rgba(255, 255, 255, .05);
+    border-color: var(--border-strong);
+    background: rgba(255, 255, 255, .06);
   }
 
   .password-wrap {
@@ -56,9 +57,9 @@
     border-radius: 999px;
     font-size: 12.5px;
     font-weight: 900;
-    border: 1px solid rgba(255, 255, 255, .12);
+    border: 1px solid var(--border-soft);
     background: rgba(255, 255, 255, .03);
-    color: rgba(255, 255, 255, .86);
+    color: rgba(255, 255, 255, .92);
     cursor: pointer;
     display: inline-flex;
     align-items: center;
@@ -67,7 +68,7 @@
 
   .toggle-pass:hover {
     filter: brightness(1.05);
-    border-color: rgba(255, 255, 255, .16);
+    border-color: var(--border-strong);
   }
 
   .toggle-pass[aria-disabled="true"] {
